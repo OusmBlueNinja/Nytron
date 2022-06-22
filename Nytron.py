@@ -1,5 +1,6 @@
 from msilib import CAB
 import os,time, pygame
+from map import *
 
 pygame.init()
 
@@ -10,20 +11,29 @@ blue = (0,0,255)
 green = (0,255,0)
 red = (255,0,0)
 sky_blue = (135, 206, 250)
+light_blue = (155,155,255)
+completed = False
+
 
 
 font = pygame.font.Font(None, 25)
+MsmllArial = pygame.font.SysFont('Arial',30)
+smllArial = pygame.font.SysFont('Arial',20)
+Arial = pygame.font.SysFont('Arial',35)
 
-width = 1280
-height = 720
+width = map.width
+height = map.height
 cooldown = 0
 jump = False
+colide = False
+colide1, colide2, colide3, colide_end = False, False, False, False
 
 # Create the clock object
 clock = pygame.time.Clock()
 logo = pygame.image.load("assets/Nytron.png")
 playerlgo = pygame.image.load("assets/Player.png")
 win = pygame.display.set_mode((width, height))
+screen = win
 pygame.display.set_caption("Nytron Alpha 000.000.003")
 pygame.display.set_icon(logo)
 
@@ -35,14 +45,17 @@ class Player:
     self.y = height/2
     self.speedx = 0
     self.xvel = 1.5
-    self.yvel = 3
+    self.yvel = 5
     self.grav_vel = 0.5
     self.size = 64
     self.bottom = 656.5
   
   def gravity(self):
-    if self.y <= height - player.size:
+    global colide
+    if self.y <= height - player.size and colide == False:
       self.y += self.grav_vel
+    else:
+      colide = True
 
 player = Player()
 
@@ -72,10 +85,9 @@ while run:
         
         if keys[pygame.K_UP]:
           if cooldown == 0:
-            if player.y == player.bottom:
+            if player.y == player.bottom or colide == True:
               movey = 1
-              cooldown = 300
-              jump = True
+              cooldown = 100
     
         if keys[pygame.K_LEFT]:
             movex = -1
@@ -83,11 +95,6 @@ while run:
             movex = 1
         else:
           movex = 0
-        
-        if player.x == -0.5:
-          if keys[pygame.K_UP]:
-            movey2 = 1
-            can_jump = False
       
           
         
@@ -97,34 +104,135 @@ while run:
       player.x += player.xvel
     elif movex == -1 and player.x > 0:
       player.x -= player.xvel
-    if movey == 1 and cooldown >= 200:
-      player.y -= player.yvel
-      can_jump = False
-    if movey2 == 1:
+    if movey == 1 and cooldown >= 50:
       player.y -= player.yvel
     if player.y == player.bottom:
-      jump = False
+      
+      movey = 0
+      movey2 = 0
+      
+    if player.y <= -3000:
+      player.y = player.bottom
       movey = 0
       movey2 = 0
       
 
     
     
+    def button(self, x, y, szey, szex, Color, text, hover_color, name):
+      color = Color
+      mouse_pos = pygame.mouse.get_pos()
+     
+      #print(mouse_pos)
+      mousex = mouse_pos[0]
+      mousey = mouse_pos[1]
+      if mousex >= x and mousex <= (x + szex):
+        if mousey >= y and mousey <= (y + szey):
+          color = hover_color
     
+          if pygame.mouse.get_pressed() == (True, False, False):
+            color = (255,255,255)
+            print('clicked', name)
+      rect = pygame.draw.rect(screen, color, (x, y, szex, szey))
+      pygame.draw.rect(screen, color, rect)
+      words = MsmllArial.render(str(text), True, black)
+      screen.blit(words, (x+17, y+7.2))
+      
+    def tile(self, x, y, szey, szex, color):
+      global colide1
+      #print(mouse_pos)
+      mousex = player.x + player.size/2
+      mousey = player.y + player.size
+      if mousex >= x and mousex <= (x + szex):
+        if mousey >= y and mousey <= (y + szey):
+          colide1 = True
+        else:
+          colide1 = False
+      else:
+        colid1e = False
+      pygame.draw.rect(screen, color, pygame.draw.rect(screen, color, (x, y, szex, szey)))
+      
+    def tile2(self, x, y, szey, szex, color):
+      global colide2
+      #print(mouse_pos)
+      mousex = player.x + player.size/2
+      mousey = player.y + player.size
+      if mousex >= x and mousex <= (x + szex):
+        if mousey >= y and mousey <= (y + szey):
+          colide2 = True
+        else:
+          colide2 = False
+      else:
+        colide2 = False
+      pygame.draw.rect(screen, color, pygame.draw.rect(screen, color, (x, y, szex, szey)))
+    
+    def tile3(self, x, y, szey, szex, color):
+      global colide3
+      #print(mouse_pos)
+      mousex = player.x + player.size/2
+      mousey = player.y + player.size
+      if mousex >= x and mousex <= (x + szex):
+        if mousey >= y and mousey <= (y + szey):
+          colide3 = True
+        else:
+          colide3 = False
+      else:
+        colide3 = False
+      pygame.draw.rect(screen, color, pygame.draw.rect(screen, color, (x, y, szex, szey)))
+      
+    def end(self, x, y, szey, szex, color):
+      global colide_end
+      #print(mouse_pos)
+      mousex = player.x + player.size/2
+      mousey = player.y + player.size
+      if mousex >= x and mousex <= (x + szex):
+        if mousey >= y and mousey <= (y + szey):
+          colide_end = True
+        else:
+          colide_end = False
+      else:
+        colide_end = False
+      pygame.draw.rect(screen, color, pygame.draw.rect(screen, color, (x, y, szex, szey)))
+      
+    if colide1 or colide2 or colide3 or colide_end:
+      colide = True
+    else:
+      colide = False
+      
+    tile(win, 200, height - 200 - 10, 30, 30*3, red)
+    tile2(win, 450, height - 200 - 10, 30, 30*3, red)
+    tile3(win, 900, height - 200 - 10, 30, 30*3, red)
+    end(win, width - 30*3 - 10, height - 300 - 10, 30, 30*3, green)
+    
+    if colide_end or completed:
+      win.blit(font.render("Level Complete", True, white), (width/2 - 100, height/2))
+      completed = True
+     
         
         
     
           
     if cooldown != 0:
-      cooldown -= 1   
+      cooldown -= 1
+      
+    elif colide == True:
+      cooldown = 0   
 
     win.blit(font.render("FPS: {}".format(framerate), True, white), (width-100, height-30))
-    
     
     player.gravity()
     #pygame.draw.rect(win, blue, pygame.Rect(player.x, player.y, player.size, player.size))
     win.blit(playerIcon, (player.x, player.y))
-    print('(', player.x, ',', player.y, ')', cooldown)
+    print('(', player.x, ',', player.y, ')', cooldown, colide)
+    
+    
+    if colide_end or completed:
+      win.fill(black)
+      win.blit(font.render("Level Complete", True, white), (width/2 - 100, height/2))
+      completed = True
+      
+      
+    win.blit(font.render("FPS: {}".format(framerate), True, white), (width-100, height-30))
     pygame.display.update()
 
 pygame.quit()
