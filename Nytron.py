@@ -34,7 +34,7 @@ logo = pygame.image.load("assets/Nytron.png")
 playerlgo = pygame.image.load("assets/Player.png")
 win = pygame.display.set_mode((width, height))
 screen = win
-pygame.display.set_caption("Nytron Alpha 000.000.003")
+pygame.display.set_caption("Nytron Alpha", map.version)
 pygame.display.set_icon(logo)
 
 
