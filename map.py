@@ -2,7 +2,7 @@ class Map:
   def __init__(self):
     self.width = 1280
     self.height = 720
-    self.version = '000.001.273'
+    self.version = '000.002.139'
     #16 by 9 grid of blocks
     
     self.map = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
